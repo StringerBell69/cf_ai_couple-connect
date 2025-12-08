@@ -1,0 +1,171 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+  /* Color palette */
+  --color-background: oklch(0.97 0.01 80);
+  --color-foreground: oklch(0.15 0.02 260);
+
+  --color-card: oklch(1 0 0);
+  --color-card-foreground: oklch(0.15 0.02 260);
+
+  --color-primary: oklch(0.55 0.2 350);
+  --color-primary-foreground: oklch(1 0 0);
+
+  --color-secondary: oklch(0.55 0.15 210);
+  --color-secondary-foreground: oklch(1 0 0);
+
+  --color-muted: oklch(0.92 0.02 80);
+  --color-muted-foreground: oklch(0.5 0.02 260);
+
+  --color-accent: oklch(0.95 0.05 350);
+  --color-accent-foreground: oklch(0.45 0.15 350);
+
+  --color-destructive: oklch(0.55 0.25 25);
+  --color-destructive-foreground: oklch(1 0 0);
+
+  --color-border: oklch(0.88 0.02 80);
+  --color-input: oklch(0.88 0.02 80);
+  --color-ring: oklch(0.55 0.2 350);
+
+  /* Custom user colors */
+  --color-wendy: oklch(0.55 0.2 350);
+  --color-wendy-light: oklch(0.95 0.05 350);
+  --color-wendy-foreground: oklch(1 0 0);
+
+  --color-daniel: oklch(0.55 0.15 210);
+  --color-daniel-light: oklch(0.95 0.05 210);
+  --color-daniel-foreground: oklch(1 0 0);
+
+  /* Chat bubble colors */
+  --color-bubble-user: oklch(0.55 0.2 350);
+  --color-bubble-user-foreground: oklch(1 0 0);
+  --color-bubble-ai: oklch(0.96 0.01 260);
+  --color-bubble-ai-foreground: oklch(0.15 0.02 260);
+
+  --radius: 1rem;
+}
+
+/* Dark mode overrides */
+@media (prefers-color-scheme: dark) {
+  @theme {
+    --color-background: oklch(0.15 0.02 260);
+    --color-foreground: oklch(0.95 0.02 80);
+
+    --color-card: oklch(0.2 0.02 260);
+    --color-card-foreground: oklch(0.95 0.02 80);
+
+    --color-primary: oklch(0.6 0.2 350);
+    --color-primary-foreground: oklch(1 0 0);
+
+    --color-secondary: oklch(0.6 0.15 210);
+    --color-secondary-foreground: oklch(1 0 0);
+
+    --color-muted: oklch(0.25 0.02 260);
+    --color-muted-foreground: oklch(0.6 0.02 260);
+
+    --color-accent: oklch(0.3 0.1 350);
+    --color-accent-foreground: oklch(0.7 0.15 350);
+
+    --color-destructive: oklch(0.5 0.2 25);
+    --color-destructive-foreground: oklch(1 0 0);
+
+    --color-border: oklch(0.25 0.02 260);
+    --color-input: oklch(0.25 0.02 260);
+    --color-ring: oklch(0.6 0.2 350);
+
+    --color-wendy: oklch(0.6 0.2 350);
+    --color-wendy-light: oklch(0.3 0.1 350);
+    --color-wendy-foreground: oklch(1 0 0);
+
+    --color-daniel: oklch(0.6 0.15 210);
+    --color-daniel-light: oklch(0.3 0.1 210);
+    --color-daniel-foreground: oklch(1 0 0);
+
+    --color-bubble-user: oklch(0.55 0.2 350);
+    --color-bubble-user-foreground: oklch(1 0 0);
+    --color-bubble-ai: oklch(0.25 0.02 260);
+    --color-bubble-ai-foreground: oklch(0.95 0.02 80);
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Mobile viewport fix */
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Custom animations */
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-soft {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 1.5s ease-in-out infinite;
+}
