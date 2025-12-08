@@ -1,0 +1,25 @@
+{
+  "name": "Couple Memory",
+  "short_name": "Couple Memory",
+  "description": "Votre mémoire de couple - Gardez trace de vos préférences et demandes",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#faf8f5",
+  "theme_color": "#d65b75",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["lifestyle", "social"],
+  "lang": "fr-FR"
+}
