@@ -25,6 +25,24 @@ export const sessions = pgTable('sessions', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
+// Chat conversations table - stores chat sessions
+export const chatConversations = pgTable('chat_conversations', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  title: text('title'), // Optional title for the conversation
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// Chat messages table - stores individual messages in conversations
+export const chatMessages = pgTable('chat_messages', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  conversationId: uuid('conversation_id').notNull().references(() => chatConversations.id, { onDelete: 'cascade' }),
+  role: text('role').notNull(), // 'user' or 'assistant'
+  content: text('content').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
 // Type exports for use in the app
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -32,3 +50,7 @@ export type Note = typeof notes.$inferSelect;
 export type NewNote = typeof notes.$inferInsert;
 export type Session = typeof sessions.$inferSelect;
 export type NewSession = typeof sessions.$inferInsert;
+export type ChatConversation = typeof chatConversations.$inferSelect;
+export type NewChatConversation = typeof chatConversations.$inferInsert;
+export type ChatMessage = typeof chatMessages.$inferSelect;
+export type NewChatMessage = typeof chatMessages.$inferInsert;
