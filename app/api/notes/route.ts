@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/src/db/db';
 import { notes, users } from '@/src/db/schema';
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, or, isNull, gt } from 'drizzle-orm';
 import { cookies } from 'next/headers';
 
 // Helper to get current user from session
@@ -17,12 +17,21 @@ async function getCurrentUser() {
   return userName;
 }
 
-// GET /api/notes - Fetch all notes
+// GET /api/notes - Fetch all active (non-expired) notes
 export async function GET() {
   try {
+    const now = new Date();
+    
+    // Fetch notes that haven't expired (expiresAt is null OR expiresAt > now)
     const allNotes = await db
       .select()
       .from(notes)
+      .where(
+        or(
+          isNull(notes.expiresAt),
+          gt(notes.expiresAt, now)
+        )
+      )
       .orderBy(desc(notes.createdAt));
 
     return NextResponse.json({ notes: allNotes });
@@ -47,7 +56,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { content } = await request.json();
+    const { content, expiresAt } = await request.json();
 
     if (!content || typeof content !== 'string') {
       return NextResponse.json(
@@ -76,6 +85,7 @@ export async function POST(request: NextRequest) {
         authorId: user[0].id,
         authorName: userName,
         content: content.trim(),
+        expiresAt: expiresAt ? new Date(expiresAt) : null,
       })
       .returning();
 

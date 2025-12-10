@@ -9,12 +9,13 @@ interface Note {
   authorId: string;
   authorName: string;
   content: string;
+  expiresAt: string | null;
   createdAt: string;
 }
 
 interface NotesContextType {
   notes: Note[];
-  addNote: (content: string) => Promise<void>;
+  addNote: (content: string, expiresAt?: Date | null) => Promise<void>;
   deleteNote: (id: string) => Promise<void>;
   getFormattedContext: () => string;
   isLoading: boolean;
@@ -46,12 +47,15 @@ export function NotesProvider({ children }: { children: ReactNode }) {
     fetchNotes();
   }, [fetchNotes]);
 
-  const addNote = useCallback(async (content: string) => {
+  const addNote = useCallback(async (content: string, expiresAt?: Date | null) => {
     try {
       const response = await fetch('/api/notes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content }),
+        body: JSON.stringify({ 
+          content,
+          expiresAt: expiresAt ? expiresAt.toISOString() : null,
+        }),
       });
 
       if (response.ok) {

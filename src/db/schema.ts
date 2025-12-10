@@ -14,6 +14,7 @@ export const notes = pgTable('notes', {
   authorId: uuid('author_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   authorName: text('author_name').notNull(), // Denormalized for convenience
   content: text('content').notNull(),
+  expiresAt: timestamp('expires_at'), // null = forever, otherwise the note expires at this time
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
