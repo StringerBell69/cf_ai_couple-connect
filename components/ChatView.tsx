@@ -3,7 +3,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/components/contexts/AuthContext';
 import { useNotes } from '@/components/contexts/NotesContext';
-import { Send, Sparkles } from 'lucide-react';
+import { useConversations } from '@/components/contexts/ConversationsContext';
+import { Send, Sparkles, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 
@@ -14,12 +15,26 @@ interface ChatMessage {
   timestamp: Date;
 }
 
-export function ChatView() {
+interface ChatViewProps {
+  saveEnabled: boolean;
+  onSelectConversation: (conversationId: string) => void;
+}
+
+export function ChatView({ saveEnabled, onSelectConversation }: ChatViewProps) {
   const { user } = useAuth();
   const { getFormattedContext } = useNotes();
+  const { 
+    currentConversationId, 
+    setCurrentConversationId, 
+    loadConversations, 
+    loadConversation,
+  } = useConversations();
+  
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -30,6 +45,37 @@ export function ChatView() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Get userId from cookie
+  useEffect(() => {
+    const userIdCookie = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('user_id='))
+      ?.split('=')[1];
+    
+    if (userIdCookie) {
+      setUserId(userIdCookie);
+      loadConversations();
+    }
+  }, [loadConversations]);
+
+  // Load messages when conversation is selected externally
+  useEffect(() => {
+    const loadCurrentConversation = async () => {
+      if (currentConversationId) {
+        const loadedMessages = await loadConversation(currentConversationId);
+        setMessages(loadedMessages.map(msg => ({
+          id: msg.id,
+          role: msg.role as 'user' | 'assistant',
+          content: msg.content,
+          timestamp: new Date(msg.createdAt),
+        })));
+      } else {
+        setMessages([]);
+      }
+    };
+    loadCurrentConversation();
+  }, [currentConversationId, loadConversation]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,6 +95,12 @@ export function ChatView() {
     try {
       const notesContext = getFormattedContext();
       
+      // Build conversation history for AI context (exclude the current message being sent)
+      const conversationHistory = messages.map(msg => ({
+        role: msg.role,
+        content: msg.content,
+      }));
+      
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -56,10 +108,21 @@ export function ChatView() {
           message: input.trim(),
           notesContext,
           currentUser: user,
+          userId: saveEnabled ? userId : undefined,
+          conversationId: saveEnabled ? currentConversationId : undefined,
+          saveToDb: saveEnabled,
+          conversationHistory,
         }),
       });
 
       const data = await response.json();
+      
+      // Update conversation ID if a new one was created
+      if (saveEnabled && data.conversationId) {
+        setCurrentConversationId(data.conversationId);
+        // Refresh conversations list
+        loadConversations();
+      }
       
       const assistantMessage: ChatMessage = {
         id: crypto.randomUUID(),
@@ -105,6 +168,12 @@ export function ChatView() {
             <p className="text-muted-foreground text-sm max-w-xs">
               Pose-moi une question sur vos notes. Par exemple : "Est-ce que je lui ai déjà parlé de..." ou "Qu'est-ce qu'il/elle m'a dit sur..."
             </p>
+            {saveEnabled && (
+              <p className="text-xs text-primary mt-3 flex items-center gap-1">
+                <Save className="w-3 h-3" />
+                Cette conversation sera sauvegardée
+              </p>
+            )}
           </div>
         ) : (
           messages.map((message, index) => (
@@ -173,3 +242,4 @@ export function ChatView() {
     </div>
   );
 }
+
