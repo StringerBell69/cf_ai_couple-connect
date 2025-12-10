@@ -25,13 +25,13 @@ Couple Memory is a private PWA designed for two users (in this case, Wendy and D
 
 - Node.js 18+ or Bun
 - PostgreSQL database
-- Cloudflare account (for Workers AI)
+- Cloudflare account (for Cloudflare Workers AI)
 
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/StringerBell69/couple-connect.git
-cd couple-connect
+git clone https://github.com/StringerBell69/cf_ai_couple-connect.git
+cd cf_ai_couple-connect
 ```
 
 ### 2. Install dependencies
@@ -74,6 +74,8 @@ CLOUDFLARE_API_TOKEN=your_api_token
 Push the schema to your database:
 
 ```bash
+bun run db:push
+# or
 npm run db:push
 ```
 
