@@ -89,6 +89,12 @@ export async function POST(request: NextRequest) {
       sameSite: 'lax',
       expires: expiresAt,
     });
+    cookieStore.set('user_id', user[0].id, {
+      httpOnly: false, // Accessible to JavaScript for conversations
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      expires: expiresAt,
+    });
 
     return NextResponse.json({
       success: true,
