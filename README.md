@@ -1,73 +1,168 @@
-# Welcome to your Lovable project
+# Couple Memory 💕
 
-## Project info
+A personal relationship memory app that helps couples keep track of each other's preferences, requests, and special moments. Built with **Next.js 15**, **Cloudflare Workers AI**, and **PostgreSQL**.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## 🎯 What is Couple Memory?
 
-## How can I edit this code?
+Couple Memory is a private PWA designed for two users (in this case, Wendy and Daniel) to:
 
-There are several ways of editing your application.
+- **📝 Save notes** about each other's preferences, requests, and important details
+- **🤖 Chat with an AI assistant** that has context of all saved notes and can answer questions like "What did Wendy ask me to remember?" or "Does Daniel like sushi?"
+- **💾 Save conversations** (optional) - chats are ephemeral by default, but can be saved for later reference
+- **📱 Install as a mobile app** via PWA support with iOS "Add to Home Screen" prompt
 
-**Use Lovable**
+## 🛠 Tech Stack
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+- **Framework**: Next.js 15 (App Router)
+- **AI**: Cloudflare Workers AI (Llama 3.1 8B Instruct)
+- **Database**: PostgreSQL with Drizzle ORM
+- **Styling**: Tailwind CSS 4 + shadcn/ui
+- **Auth**: Simple session-based authentication with cookies
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🚀 Getting Started
 
-**Use your preferred IDE**
+### Prerequisites
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- Node.js 18+ or Bun
+- PostgreSQL database
+- Cloudflare account (for Workers AI)
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### 1. Clone the repository
 
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```bash
+git clone https://github.com/StringerBell69/couple-connect.git
+cd couple-connect
 ```
 
-**Edit a file directly in GitHub**
+### 2. Install dependencies
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+npm install
+# or
+bun install
+```
 
-**Use GitHub Codespaces**
+### 3. Set up environment variables
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Copy the example environment file:
 
-## What technologies are used for this project?
+```bash
+cp .env.example .env.local
+```
 
-This project is built with:
+Then edit `.env.local` with your credentials:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+```env
+# PostgreSQL database URL
+DATABASE_URL=postgres://user:password@host:5432/couple_connect
 
-## How can I deploy this project?
+# Cloudflare Workers AI credentials
+CLOUDFLARE_ACCOUNT_ID=your_account_id
+CLOUDFLARE_API_TOKEN=your_api_token
+```
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+#### Getting Cloudflare credentials:
 
-## Can I connect a custom domain to my Lovable project?
+1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com)
+2. Your **Account ID** is in the URL or on the right sidebar of any page
+3. Create an **API Token** at [API Tokens](https://dash.cloudflare.com/profile/api-tokens):
+   - Click "Create Token"
+   - Use "Workers AI" template or create custom with `Workers AI: Read` permission
 
-Yes, you can!
+### 4. Set up the database
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+Push the schema to your database:
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+```bash
+npm run db:push
+```
+
+(Optional) Seed the database with initial users:
+
+```bash
+npx tsx src/db/seed.ts
+```
+
+This creates two users:
+- **Wendy** (password: `wendy123`)
+- **Daniel** (password: `daniel123`)
+
+### 5. Run the development server
+
+```bash
+npm run dev
+# or
+bun dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## 📖 How to Use
+
+### Login
+Log in as either Wendy or Daniel using the credentials above.
+
+### Notes Tab
+- Add notes about your partner's preferences, requests, or important details
+- Notes are tagged with your name automatically
+- Both users can see all notes
+
+### Chat Tab
+- Ask the AI questions about your saved notes
+- The AI has full context of all notes and knows who you are
+- Examples:
+  - "What does Wendy want for her birthday?"
+  - "Did I promise Daniel anything recently?"
+  - "What are our favorite restaurants?"
+
+### Save Conversations (Optional)
+- Toggle the save button (disk icon) in the header to persist conversations
+- Access saved conversations via the history button (clock icon)
+- By default, chats are ephemeral and cleared on refresh
+
+## 📁 Project Structure
+
+```
+├── app/
+│   ├── api/
+│   │   ├── auth/          # Login/logout endpoints
+│   │   ├── chat/          # AI chat endpoint (Cloudflare Workers AI)
+│   │   ├── conversations/ # Conversation CRUD endpoints
+│   │   └── notes/         # Notes CRUD endpoints
+│   ├── globals.css        # Global styles
+│   ├── layout.tsx         # Root layout
+│   └── page.tsx           # Main app page
+├── components/
+│   ├── contexts/          # React contexts (Auth, Notes, Conversations)
+│   ├── ui/                # shadcn/ui components
+│   ├── ChatView.tsx       # Chat interface
+│   ├── NotesView.tsx      # Notes interface
+│   └── ...
+└── src/
+    └── db/
+        ├── db.ts          # Database connection
+        ├── schema.ts      # Drizzle schema
+        └── seed.ts        # Seed script
+```
+
+## 🔑 API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/auth/login` | User login |
+| POST | `/api/auth/logout` | User logout |
+| GET | `/api/notes` | Get all notes |
+| POST | `/api/notes` | Create a note |
+| DELETE | `/api/notes` | Delete a note |
+| POST | `/api/chat` | Send message to AI |
+| GET | `/api/conversations` | Get user's conversations |
+| DELETE | `/api/conversations` | Delete a conversation |
+| GET | `/api/conversations/[id]` | Get messages for a conversation |
+
+## 🤝 Contributing
+
+This is a personal project, but feel free to fork and adapt it for your own couple!
+
+## 📄 License
+
+MIT
